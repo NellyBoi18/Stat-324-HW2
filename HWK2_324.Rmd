@@ -1,0 +1,331 @@
+---
+title: "Stat 324 Homework #2"
+author: "Nelson Lu"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*If an exercise asks you to use R, include a copy of the code and output. Please edit your code and output to be only the relevant portions.
+
+*If a problem does not specify how to compute the answer, you many use any appropriate method. I may ask you to use R or use manually calculations on your exams, so practice accordingly.
+
+*You must include an explanation and/or intermediate calculations for an exercise to be complete.
+
+## Summarizing Data Numerically and Graphically (I)
+
+**Exercise 1:** A company that manufactures toilets claims that its new pressure-assisted toilet reduces the average amount of water used by more than 0.5 gallons per flush when compared to its current model. The company selects 20 toilets of the *current* type and 19 of the *new* type and measures the amount of water used when each toilet is flushed once.  The number of gallons measured for each flush are recorded below. The measurements are also given in flush.csv.
+
+Current Model: 1.63, 1.25, 1.23, 1.49, 2.11, 1.48, 1.94, 1.72, 1.85, 1.54, 1.67, 1.76, 1.46, 1.32, 1.23, 1.67, 1.74, 1.63, 1.25, 1.56
+
+New Model: 1.28, 1.19, 0.90, 1.24, 1.00, 0.80, 0.71, 1.03, 1.27, 1.14, 1.36, 0.91, 1.09, 1.36, 0.91, 0.91, 0.86, 0.93, 1.36
+
+
+> a. Use R to create histograms to display the sample data from each model (any kind of histogram that you want since sample sizes are very similar). Have identical x and y axis scales so the two groups' values are more easily compared. Include useful titles.
+
+```{r}
+currModel <- c(1.63, 1.25, 1.23, 1.49, 2.11, 1.48, 1.94, 1.72, 1.85, 1.54, 1.67, 1.76, 1.46, 1.32, 1.23, 1.67, 1.74, 1.63, 1.25, 1.56)
+hist(currModel, labels=TRUE, main="Current Model", breaks=seq(0.7, 2.2, 0.1), xaxp=c(0.7, 2.2, 5), xlim=c(0.7,2.2), ylim=c(0,6), xlab="Number of Gallons")
+
+newModel <- c(1.28, 1.19, 0.90, 1.24, 1.00, 0.80, 0.71, 1.03, 1.27, 1.14, 1.36, 0.91, 1.09, 1.36, 0.91, 0.91, 0.86, 0.93, 1.36)
+hist(newModel, labels=TRUE, main="New Model", breaks=seq(0.7, 2.2, 0.1), xaxp=c(0.7, 2.2, 5), xlim=c(0.7,2.2), ylim=c(0,6), xlab="Number of Gallons")
+```
+
+\vspace{.5cm}
+
+> b. Compare the shape of the gallons per flush from the two types of toilets observed in this experiment. 
+
+**Solution:**
+When putting the two histograms on the same scale, the current model has a slightly left skewed histogram while the new model for sure has a right skewed histogram.
+
+\vspace{.5cm}
+
+>  c. Compute the mean and median gallons flushed for the Current and New Model toilets using the built-in R functions. Compare the measures of center across the two groups and comment on how that relationship is evident in the histograms.
+
+**Solution:**
+```{r}
+mean(currModel)
+mean(newModel)
+median(currModel)
+median(newModel)
+```
+For the current model, the mean is slightly lower than the median because of how many values were between 1.2 and 1.3. This can be seen in the histogram where the lowest four values were in a 0.1 gallon range compared to the top, where the four highest values spanned a 0.4-0.5 gallon range. This dragged down the mean slightly. 
+In the new model, the mean is slightly higher than the median. The median is lower because of the number of values between 0.9 and 1.0 gallons. This is evident in the histogram because of how much higher that range sticks up from the other ranges. If you split the histogram along the 1.0 mark on the x-axis, the left side has 9 values spanning a range of 0.3 gallons and the right side will have 10 values spanning a range of 0.4 gallons. This slightly larger range, along with how many values are between 0.9 and 1.0 will mean that the mean will be slightly higher than the median. 
+
+\vspace{.5cm}
+
+> d. Compute (using built-in R function) and compare the sample standard deviation of gallons flushed by the current and new model toilets. Comment on how the relative size of these values can be identified from the histograms. 
+
+**Solution:**
+```{r}
+sd(currModel)
+sd(newModel)
+```
+The sample standard deviation of the current model is larger than that of the new model and that is clearly evident from the histograms. The Current Model's histogram shows a big range; from 1.2 to 2.2 gallons. The New Model's histogram shows a range from 0.7 to 1.4 gallons. A 1 gallon to .7 gallon difference. 
+
+\vspace{.5cm}
+
+> e. Use R to create side-by-side boxplots of the two sets in R so they are easily comparable. 
+
+```{r}
+boxplot(currModel, newModel, horizontal=TRUE, names=c("Current Model", "New Model"), main=("Gallons Per Flush"), xlab="Gallons")
+```
+
+\vspace{.5cm}
+
+> f. Explain why there are no values shown as a dot on the Current Model flush boxplot. To what values do the Current model flush boxplot whiskers extend? (Use R for your boxplot calculations and type=2 for quantiles)
+
+**Solution:**
+There are no dot values on the Current Model's histogram because there are no outliers in the data. Outliers are classified as [Q1-1.5*IQR; Q3+1.5*IQR]. So we can calculate that:
+
+```{r}
+quantile(currModel, type=2)
+```
+We see that Q1 is 1.230 and Q3 is 1.730 so we just have to +- 1.5*IQR
+```{r, include=FALSE}
+Q1<- 1.230
+Q3<- 1.730
+```
+
+```{r}
+lowerOutlier <- Q1 - 1.5 * IQR(currModel)
+lowerOutlier
+upperOutlier <- Q3 + 1.5 * IQR(currModel)
+upperOutlier
+```
+We see that our lower outlier point would start at 0.78 and our upper outlier point would start at 2.18. If we show the range:
+```{r}
+range(currModel)
+```
+We see that our values fall inside of these outlier cutoffs, meaning that our data has no outliers. This range also shows the values that the Current Model's boxplot whiskers extend; The lower range extends to 1.23 and the upper range extends to 2.11
+
+\vspace{.5cm}
+
+> g. What would be the mean and median gallons flushed if we combined the two data sets into one large data set with 39 observations? Show how the mean can be calculated from all observations in one vector and also with the summary measures in part (c) along with the sample sizes. Explain why the median of the combined set cannot be computed based on (c).
+
+**Solution:**
+```{r}
+combined = c(currModel, newModel)
+mean(combined)
+median(combined)
+
+currModelMean <- mean(currModel)
+newModelMean <- mean(newModel)
+combinedMeanByHand = (20*currModelMean + 19*newModelMean) / (20+19)
+combinedMeanByHand
+```
+The median of the combined set cannot be computed based on (c) because we need to know all the values in the dataset to determine which one is exactly the middle of the set without taking into account the weight of the value. If we were to take into account the weight of the value, then it would just turn into the mean. 
+
+\vspace{.5cm}
+
+**Exercise 2** You are adding Badger-themed bedazzle to your striped overalls and are using both red and white beads. You are interested in how the size of the bag of beads you select your beads from changes the probability of outcomes of interest. Compute the probability for outcomes a and b using three different sampling strategies each time.
+
+(Small Pop) drawing without replacement from a small population where the bag of beads contains 6 White beads and 4 Red beads.
+
+(Large Pop) drawing without replacement from a large population where the bag of beads contains 600 White beads and 400 Red beads.
+
+(Same Pop) drawing from a population where the bag of beads always contains 60% White and 40% Red beads.
+
+Example: Consider choosing 3 beads. Calculate the probability of selecting no white beads. 
+
+Small Pop: P([RRR])=$\frac{4}{10}*\frac{3}{9}*\frac{2}{8}=0.03333333$
+
+Large Pop: P([RRR])=$\frac{400}{1000}*\frac{399}{999}*\frac{398}{998}=0.06371181$
+
+Same Pop: P([RRR])=$0.40*.40*.40=0.064$
+
+```{r}
+(4/10)*(3/9)*(2/8)
+(400/1000)*(399/999)*(398/998)
+.4*.4*.4
+
+```
+
+> a. Consider choosing 3 beads. Calculate the probability of selecting exactly 1 white bead. 
+
+**Small Pop: **
+```{r}
+#P[WRR] RWR RRW
+3 * (6/10) * (4/9) * (3/8)
+```
+**Large Pop: **
+```{r}
+#P[WRR]
+3 * (600/1000)*(400/999)*(399/998)
+```
+**Same Pop: **
+```{r}
+#P[WRR]
+3 * .6*.4*.4
+```
+
+> b. Consider choosing 3 beads. Calculate the probability of selecting at least 1 white bead.
+
+**Small Pop: **
+```{r}
+#1 - P[RRR]
+1 - (4/10)*(3/9)*(2/8)
+```
+**Large Pop: **
+```{r}
+#1 - P[RRR]
+1 - (400/1000)*(399/999)*(398/998)
+```
+**Same Pop: **
+```{r}
+#P[RRR]
+1 - .4*.4*.4
+```
+
+> c. Consider sampling without replacement. Does drawing from a population that is **small** or **large** relative to your sample size result in an probability that is closest to the probability when sampling with replacement?
+
+**Solution:**
+Drawing from a large population results in a probability that is closest to the probability when sampling with replacements because the larger sample size reduces the influence of not replacing the bead.
+
+\vspace{.5cm}
+
+**Exercise 3**  Six hundred (600) paving stones were examined for cracking and discoloration. Eighteen (18) were found to be cracked and 24 were found to be discolored. A total of 562 stones were neither cracked nor discolored.
+
+> a. Create a 2-way table to organize the counts of stones in each of the 4 combinations of Cracked/Not Cracked and Discolored/Not Discolored.
+
+<center>
+
+| X           | Cracked | Not Cracked | Total |
+|:-:|:-:|:-:|:-:|
+| Discolored     |  4  | 20  | 24  |
+| Not Discolored |  14 | 562 | 576 |
+| Total          | 18  | 582 | 600 |
+
+</center>
+
+
+> b. What is the probability that a randomly sampled paving stone from this set is discolored and not cracked? 
+
+**Solution:**
+
+P[Discolored AND Not Cracked] = 
+$\frac{20}{600}$
+```{r}
+20/600
+```
+
+\vspace{.5cm}
+
+> c. What is the probability that a randomly sampled paving stone from this group is cracked or discolored?
+
+**Solution:**
+
+P[Cracked] + P[Discolored] - P[Cracked AND Discolored] =
+$\frac{18}{600} + \frac{24}{600} - \frac{4}{600}$
+```{r}
+18/600 + 24/600 - 4/600
+```
+
+\vspace{.5cm}
+
+> d. What is the probability that in a random sample of 3 paving stones from this set without replacement, at least one of the three is cracked or discolored?
+
+**Solution:**
+
+1 - P[Not Discolored AND Not Cracked] = 
+$1 - \frac{562}{600} * \frac{561}{599} * \frac{560}{598}$
+```{r}
+1 - (562/600) * (561/599) * (560/598)
+```
+
+\vspace{.5cm}
+
+> (OPTIONAL) Explain what the code in this simulation below is doing and how it can be used to check your answer from (d).
+
+```{r, eval=FALSE}
+pop=c(rep(1,38), rep(0,562))
+nsamp=500000
+num_CorD=rep(9,nsamp)
+for (i in 1:nsamp){
+  samp=sample(pop,3, replace=FALSE)
+  num_CorD[i]=sum(samp)
+}
+hist(num_CorD, labels=TRUE)
+
+sum(num_CorD==1|num_CorD==2|num_CorD==3)/nsamp
+sum(num_CorD>=1)/nsamp
+1-sum(num_CorD==0)/nsamp
+
+```
+**Solution:**
+First, it is adding 38 ones and 562 zeros into a vector called pop. This signifies 38 cracked or discolored stones and 562 of the rest. Then it adds nsamp (500,000) nines into num_CorD to initialize it. Then for nsamp (500,000) times, it takes a sample of 3 numbers, without replacement, and puts the sum of the three numbers into the num_CorD vector. It then creates a histogram using the num_CorD vector. This histogram basically shows that out of nsamp times, how many times at least one of the three stones in each sample was cracked or discolored. In the last three lines, it basically shows the different ways the probability can be calculated. The first way adds up all of the times where one, two, or three stones were cracked and divides it by nsamp (the number of samples). The second way adds up all of the time where at least one of the stones were cracked and divides it by nsamp. The last way adds up all the times where none of the stones were cracked, divides by nsamp, and then subtracted from 1 because it is the compliment of the first two events. This can be used to check my answer from (d) because it has the same sample size but the trial is run 500,000 size. 
+
+\vspace{.5cm}
+
+> e. What is the probability that a randomly sampled paving stone from this group has discoloration, given we know that it is cracked?
+
+P[Discolored | Cracked] = $\frac{4}{18}$
+
+```{r}
+4/18
+```
+
+
+
+\vspace{.5cm}
+
+> f. Is being discolored and cracked independent in this set of 600 paving stones?
+
+P[Discolored] = ? = P[Discolored|Cracked]
+
+P[Discolored] = $\frac{24}{600}$
+
+P[Discolored | Cracked] = $\frac{4}{18}$
+
+$\frac{24}{600}$ != $\frac{4}{18}$
+
+Being discolored and cracked are not independent
+
+\vspace{.5cm}
+
+> g. Now suppose in another group of 600 paving stones, forty-eight (48) were found to be cracked and 25 were found to be discolored. How many stones would be cracked and discolored (??) if the events: discolored and cracked are independent in this group of 600 stones?
+Make sure to show how you calculated your answer.
+
+**Solution**
+
+Total not cracked: 600 - 48 = 552
+
+Total not discolored: 600 - 25 = 575
+
+Discolored AND Cracked: P[Cracked] = P[Cracked | Discolored]
+
+$\frac{48}{600} = \frac{x}{25}$
+
+x = 2
+
+Discolored AND Not Cracked: P[Not Cracked] = P[Cracked | Discolored]
+
+$\frac{552}{600} = \frac{x}{25}$
+
+x = 23
+
+Not Discolored AND Cracked: P[Cracked] = P[Cracked | Not Discolored]
+
+$\frac{48}{600} = \frac{x}{575}$
+
+x = 46
+
+Not Discolored AND Not Cracked: P[Not Cracked] = P[Not Cracked | Not Discolored]
+
+$\frac{552}{600} = \frac{x}{575}$
+
+x = 529
+
+<center>
+|     X        | Cracked | Not Cracked | Total |
+|:-:|:-:|:-:|:-:|
+| Discolored     |    2  |    23  | 25 |
+| Not Discolored |   46  |   529  | 575|
+| Total          |   48  |   552  | 600 |
+</center>
+
